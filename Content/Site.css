@@ -25,3 +25,7 @@ select {
 #files {
     margin-top: 35px;
 }
+
+.progress-header {
+    width: 35%;
+}
