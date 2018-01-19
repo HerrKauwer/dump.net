@@ -42,7 +42,7 @@ namespace Dump.Controllers
             return Content(contents);
         }
 
-        [HttpPost]
+        [HttpPost, ValidateInput(false)]
         public ActionResult Clipboard(string contents)
         {
             System.IO.File.WriteAllText(ClipboardPath, contents);
