@@ -90,6 +90,7 @@ $().ready(function () {
     }
 
     r.assignBrowse(document.getElementById('browse-button'));
+    r.assignDrop(document.getElementsByTagName('body'));
 
     r.on('fileSuccess', function (file) {
         refreshFiles();
@@ -113,7 +114,7 @@ $().ready(function () {
     });
     r.on('fileAdded', function (file, event) {
         r.upload();
-
+        $("#upload-panel").collapse("show");
         addFileToTable(file);
     });
 });
