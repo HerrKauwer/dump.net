@@ -1,6 +1,4 @@
 ﻿using Dump.Models;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -31,7 +29,13 @@ namespace Dump.Controllers
             return View(fileMetas);
         }
 
-        [HttpGet]
+        public ActionResult Delete(string filename)
+        {
+            System.IO.File.Delete(Path.Combine(UploadsDir, filename));
+            return RedirectToAction(nameof(Index));
+        }
+
+    [HttpGet]
         public ActionResult Clipboard()
         {
             string contents = null;

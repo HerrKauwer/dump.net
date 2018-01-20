@@ -22,6 +22,10 @@ function refreshFiles() {
             tr.append($("<td>").text(fileMeta.LastModified));
             tr.append($("<td>").text(readableSize(fileMeta.Size)));
 
+            td = $("<td>");
+            td.append($("<a>").addClass("glyphicon glyphicon-trash").attr("href", "/Home/Delete?filename=" + fileMeta.FileName));
+            tr.append($(td));
+
             tbody.append(tr);
         });
     });
@@ -29,7 +33,7 @@ function refreshFiles() {
 
 function readableSize(size) {
     suf = ["B", "KB", "MB", "GB", "TB", "PB", "EB"]; //Longs run out around EB
-    if (size == 0)
+    if (size === 0)
         return "0" + suf[0];
     var bytes = Math.abs(size);
     var place = Math.floor(Math.log(bytes) / Math.log(1024));
