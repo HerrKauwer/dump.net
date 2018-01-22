@@ -3,14 +3,20 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Configuration;
+using System.Web.Hosting;
 using System.Web.Mvc;
 
 namespace Dump.Controllers
 {
     public class HomeController : Controller
     {
-        private static string UploadsDir = WebConfigurationManager.AppSettings["uploadsDir"];
+        private static string UploadsDir = HostingEnvironment.MapPath(WebConfigurationManager.AppSettings["uploadsDir"]);
         private static string ClipboardPath = Path.Combine(UploadsDir, "clipboard.txt");
+
+        public HomeController()
+        {
+            Directory.CreateDirectory(UploadsDir);
+        }
 
         public ActionResult Index()
         {

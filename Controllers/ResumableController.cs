@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Configuration;
+using System.Web.Hosting;
 using System.Web.Http;
 
 namespace Dump.Controllers
@@ -12,8 +13,14 @@ namespace Dump.Controllers
     [RoutePrefix("api/File")]
     public class FileUploadController : ApiController
     {
-        private static string UploadsDir = WebConfigurationManager.AppSettings["uploadsDir"];
-        private string root = Path.Combine(UploadsDir, "temp");
+        private static string UploadsDir = HostingEnvironment.MapPath(WebConfigurationManager.AppSettings["uploadsDir"]);
+        private static string TempDir = Path.Combine(UploadsDir, "temp");
+
+        public FileUploadController()
+        {
+            Directory.CreateDirectory(UploadsDir);
+            Directory.CreateDirectory(TempDir);
+        }
 
         [Route("Upload"), HttpOptions]
         public object UploadFileOptions()
@@ -35,8 +42,8 @@ namespace Dump.Controllers
             {
                 throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
             }
-            if (!Directory.Exists(root)) Directory.CreateDirectory(root);
-            var provider = new MultipartFormDataStreamProvider(root);
+            if (!Directory.Exists(TempDir)) Directory.CreateDirectory(TempDir);
+            var provider = new MultipartFormDataStreamProvider(TempDir);
 
             if (await ReadPart(provider))
             {
@@ -133,7 +140,7 @@ namespace Dump.Controllers
         [NonAction]
         private string GetChunkFileName(int chunkNumber, string identifier)
         {
-            return Path.Combine(root, string.Format("{0}_{1}", identifier, chunkNumber.ToString()));
+            return Path.Combine(TempDir, string.Format("{0}_{1}", identifier, chunkNumber.ToString()));
         }
 
         [NonAction]
@@ -149,7 +156,7 @@ namespace Dump.Controllers
         [NonAction]
         private string GetFilePath(ResumableConfiguration configuration)
         {
-            return Path.Combine(root, configuration.Identifier);
+            return Path.Combine(TempDir, configuration.Identifier);
         }
 
         [NonAction]
