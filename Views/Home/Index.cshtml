@@ -1,4 +1,4 @@
-﻿@model IList<Dump.Models.FileMeta>
+﻿@model Dump.Models.HomeModel
 
 <!DOCTYPE html>
 <html>
@@ -25,9 +25,9 @@
                         Upload a new item
                     </h4>
                 </div>
-                <div id="upload-panel" class="panel-collapse collapse" role="tabpanel">
+                <div id="upload-panel" class="panel-collapse" role="tabpanel">
                     <div class="panel-body">
-                        <div id="legacy" style="display: none">
+                        <div id="legacy">
                             Legacy upload form
                             @using (Html.BeginForm("Upload", "Home", FormMethod.Post, new { @class = "form-inline", enctype = "multipart/form-data" }))
                             {
@@ -35,7 +35,7 @@
                                 <div class="form-group"><input type="submit" name="Submit" id="Submit" value="Upload" /></div>
                             }
                         </div>
-                        <div id="new">
+                        <div id="new" style="display: none">
                             <div class="form-group"><button id="browse-button">Select files</button></div>
                             <table class="table" id="progress">
                                 <thead>
@@ -53,23 +53,26 @@
             </div>
             <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="clipboard-heading" data-toggle="collapse" data-target="#clipboard-panel">
-                    <span class="glyphicon glyphicon-refresh pull-right"></span>
+                    <span id="refresh-clipboard" class="glyphicon glyphicon-refresh pull-right" style="display: none"></span>
                     <h4 class="panel-title">
                         Clipboard
                     </h4>
                 </div>
                 <div id="clipboard-panel" class="panel-collapse collapse in" role="tabpanel">
                     <div class="panel-body">
-                        <div class="form-group">
-                            <textarea type="text" style="width: 100%; height: 100px"></textarea>
-                        </div>
-                        <button id="save-clipboard" class="btn btn-default">Save</button>
+                        @using (Html.BeginForm("Clipboard", "Home", FormMethod.Post, new { id = "form-clipboard" }))
+                        {
+                            <div class="form-group">
+                                <textarea type="text" style="width: 100%; height: 100px" name="contents">@Model.Clipboard</textarea>
+                            </div>
+                            <input type="submit" id="save-clipboard" class="btn btn-default" value="Save"/>
+                        }
                     </div>
                 </div>
             </div>
             <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="files-heading" data-toggle="collapse" data-target="#files-panel">
-                    <span class="glyphicon glyphicon-refresh pull-right"></span>
+                    <span id="refresh-files" class="glyphicon glyphicon-refresh pull-right" style="display: none"></span>
                     <h4 class="panel-title">
                         Uploads
                     </h4>
@@ -85,7 +88,17 @@
                                     <th>&nbsp;</th>
                                 </tr>
                             </thead>
-                            <tbody></tbody>
+                            <tbody>
+                                @foreach (var fileMeta in Model.Files)
+                                {
+                                    <tr>
+                                        <td>@Html.ActionLink(fileMeta.FileName, "Download", new { filename = fileMeta.FileName })</td>
+                                        <td>@fileMeta.LastModified</td>
+                                        <td>@fileMeta.ReadableSize</td>
+                                        <td>@Html.ActionLink(" ", "Delete", new { filename = fileMeta.FileName }, new { @class = "glyphicon glyphicon-trash" })</td>
+                                    </tr>
+                                }
+                            </tbody>
                         </table>
                     </div>
                 </div>

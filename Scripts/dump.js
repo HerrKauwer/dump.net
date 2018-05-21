@@ -20,7 +20,7 @@ function refreshFiles() {
             td.append($("<a>").text(fileMeta.FileName).attr("href", "/Home/Download?filename=" + fileMeta.FileName))
             tr.append($(td));
             tr.append($("<td>").text(fileMeta.LastModified));
-            tr.append($("<td>").text(readableSize(fileMeta.Size)));
+            tr.append($("<td>").text(fileMeta.ReadableSize));
 
             td = $("<td>");
             td.append($("<a>").addClass("glyphicon glyphicon-trash").attr("href", "/Home/Delete?filename=" + fileMeta.FileName));
@@ -31,13 +31,21 @@ function refreshFiles() {
     });
 }
 
+function round(number, precision) {
+    var shift = function (number, exponent) {
+        var numArray = ("" + number).split("e");
+        return +(numArray[0] + "e" + (numArray[1] ? (+numArray[1] + exponent) : exponent));
+    };
+    return shift(Math.round(shift(number, +precision)), -precision);
+}
+
 function readableSize(size) {
     suf = ["B", "KB", "MB", "GB", "TB", "PB", "EB"]; //Longs run out around EB
     if (size === 0)
         return "0" + suf[0];
     var bytes = Math.abs(size);
     var place = Math.floor(Math.log(bytes) / Math.log(1024));
-    var num = Math.round(bytes / Math.pow(1024, place), 1);
+    var num = round(bytes / Math.pow(1024, place), 1);
     return (Math.sign(size) * num).toString() + " " + suf[place];
 }
 
@@ -59,22 +67,27 @@ function addFileToTable(file) {
 }
 
 $().ready(function () {
-    refreshClipboard();
-    refreshFiles();
+    $("#upload-panel").addClass("collapse");
+
+    $("#form-clipboard").submit(function () {
+        return false;
+    });
 
     $("#save-clipboard").click(function () {
+        event.stopPropagation();
+
         $.post("/Home/Clipboard", {
             contents: $("#clipboard-panel textarea").val()
         });
     });
 
-    $("#clipboard-heading span").click(function (event) {
+    $("#refresh-clipboard").show().click(function (event) {
         event.stopPropagation();
 
         refreshClipboard();
     });
 
-    $("#files-heading span").click(function (event) {
+    $("#refresh-files").show().click(function (event) {
         event.stopPropagation();
 
         refreshFiles();
@@ -84,9 +97,9 @@ $().ready(function () {
         target: '/api/File/Upload'
     });
 
-    if (!r.support) {
-        $("#legacy").show();
-        $("#new").hide();
+    if (r.support) {
+        $("#legacy").hide();
+        $("#new").show();
     }
 
     r.assignBrowse(document.getElementById('browse-button'));

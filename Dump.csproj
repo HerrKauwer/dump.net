@@ -134,6 +134,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\FileInfo.cs" />
+    <Compile Include="Models\HomeModel.cs" />
     <Compile Include="Models\ResumableConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
