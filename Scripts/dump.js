@@ -31,12 +31,20 @@ function refreshFiles() {
     });
 }
 
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/round#A_better_solution
 function round(number, precision) {
     var shift = function (number, exponent) {
         var numArray = ("" + number).split("e");
         return +(numArray[0] + "e" + (numArray[1] ? (+numArray[1] + exponent) : exponent));
     };
     return shift(Math.round(shift(number, +precision)), -precision);
+}
+
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/sign#Polyfill
+if (!Math.sign) {
+    Math.sign = function (x) {
+        return ((x > 0) - (x < 0)) || +x;
+    };
 }
 
 function readableSize(size) {
@@ -100,34 +108,34 @@ $().ready(function () {
     if (r.support) {
         $("#legacy").hide();
         $("#new").show();
-    }
 
-    r.assignBrowse(document.getElementById('browse-button'));
-    r.assignDrop(document.getElementsByTagName('body'));
+        r.assignBrowse(document.getElementById('browse-button'));
+        r.assignDrop(document.getElementsByTagName('body'));
 
-    r.on('fileSuccess', function (file) {
-        refreshFiles();
-    });
-    r.on('fileProgress', function (file) {
-        var tbody = $("#progress tbody");
-        var uploads = $("tr", tbody);
-
-        var percentage = Math.floor(file.progress() * 100).toString();
-
-        $.each(uploads, function (i, tr) {
-            if ($(tr).data("filename") === file.fileName) {
-                $(".progress-bar", tr).css("width", percentage + "%");
-                $(".progress-bar", tr).text(percentage + "%");
-
-                if (percentage === "100") {
-                    $(".progress-bar", tr).removeClass("progress-bar-striped").removeClass("progress-bar-animated");
-                }
-            }
+        r.on('fileSuccess', function (file) {
+            refreshFiles();
         });
-    });
-    r.on('fileAdded', function (file, event) {
-        r.upload();
-        $("#upload-panel").collapse("show");
-        addFileToTable(file);
-    });
+        r.on('fileProgress', function (file) {
+            var tbody = $("#progress tbody");
+            var uploads = $("tr", tbody);
+
+            var percentage = Math.floor(file.progress() * 100).toString();
+
+            $.each(uploads, function (i, tr) {
+                if ($(tr).data("filename") === file.fileName) {
+                    $(".progress-bar", tr).css("width", percentage + "%");
+                    $(".progress-bar", tr).text(percentage + "%");
+
+                    if (percentage === "100") {
+                        $(".progress-bar", tr).removeClass("progress-bar-striped").removeClass("progress-bar-animated");
+                    }
+                }
+            });
+        });
+        r.on('fileAdded', function (file, event) {
+            r.upload();
+            $("#upload-panel").collapse("show");
+            addFileToTable(file);
+        });
+    }
 });
