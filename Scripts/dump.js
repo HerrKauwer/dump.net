@@ -17,7 +17,7 @@ function refreshFiles() {
         $.each(data, function (i, fileMeta) {
             var tr = $("<tr>");
             var td = $("<td>");
-            td.append($("<a>").text(fileMeta.FileName).attr("href", "/Home/Download?filename=" + fileMeta.FileName))
+            td.append($("<a>").text(fileMeta.FileName).attr("href", "/Home/Download?filename=" + fileMeta.FileName));
             tr.append($(td));
             tr.append($("<td>").text(fileMeta.LastModified));
             tr.append($("<td>").text(fileMeta.ReadableSize));
@@ -48,7 +48,7 @@ if (!Math.sign) {
 }
 
 function readableSize(size) {
-    suf = ["B", "KB", "MB", "GB", "TB", "PB", "EB"]; //Longs run out around EB
+    var suf = ["B", "KB", "MB", "GB", "TB", "PB", "EB"]; //Longs run out around EB
     if (size === 0)
         return "0" + suf[0];
     var bytes = Math.abs(size);
@@ -59,7 +59,6 @@ function readableSize(size) {
 
 function addFileToTable(file) {
     var tbody = $("#progress tbody");
-    var uploads = $("tr", tbody);
 
     var tr = $("<tr>").data("filename", file.fileName);
     tr.append($("<td>").text(file.fileName));
@@ -67,7 +66,7 @@ function addFileToTable(file) {
     var td = $("<td>");
     var progress = $("<div>").addClass("progress");
     td.append(progress);
-    var progressBar = $("<div>").addClass("progress-bar").addClass("progress-bar-striped").addClass("active").css("width", "0%");
+    var progressBar = $("<div>").addClass("progress-bar").addClass("progress-bar-striped").addClass("active").css("width", "0");
     progress.append(progressBar);
     tr.append(td);
 
@@ -112,7 +111,7 @@ $().ready(function () {
         r.assignBrowse(document.getElementById('browse-button'));
         r.assignDrop(document.getElementsByTagName('body'));
 
-        r.on('fileSuccess', function (file) {
+        r.on('fileSuccess', function () {
             refreshFiles();
         });
         r.on('fileProgress', function (file) {
@@ -132,7 +131,7 @@ $().ready(function () {
                 }
             });
         });
-        r.on('fileAdded', function (file, event) {
+        r.on('fileAdded', function (file) {
             r.upload();
             $("#upload-panel").collapse("show");
             addFileToTable(file);
